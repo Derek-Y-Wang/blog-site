@@ -1,12 +1,13 @@
 <script>
-  import Header from '../../components/Header.svelte'
+  import Header from '../../../components/Header.svelte'
 </script>
 
 <body>
   <Header />
   <header> 
-    <h2>About Me</h2>
+    <h2>All Posts</h2>
   </header>
+
   <p>Nothing to see here!</p>
 </body>
 
