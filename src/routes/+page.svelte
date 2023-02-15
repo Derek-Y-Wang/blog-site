@@ -8,7 +8,7 @@
       <Header />
     </header>
     
-    <h3>Home</h3>
+    <h2>Home</h2>
     <p>Nothing to see here!</p>
   </body>
   

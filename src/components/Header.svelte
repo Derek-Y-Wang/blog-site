@@ -5,14 +5,14 @@
 <header>
 
 
-  <h2><a href="/">Derek Wang</a></h2>
+  <h2><a href="/blog-site">Derek Wang</a></h2>
   <nav>
     <ul>
       <li>
-        <a href="/posts/">Posts</a>
+        <a href="/blog-site/posts/">Posts</a>
       </li>
       <li>
-        <a href="/about">About</a>
+        <a href="/blog-site/about">About</a>
       </li>
     </ul>
   </nav>
