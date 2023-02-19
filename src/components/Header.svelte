@@ -3,8 +3,6 @@
 </script>
 
 <header>
-
-
   <h2><a href="/blog-site">Derek Wang</a></h2>
   <nav>
     <ul>
@@ -23,7 +21,7 @@
         margin-top: 2em;
         background: none;
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         font-size: 16px;
         line-height: 1.5;
