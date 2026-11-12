@@ -10,7 +10,13 @@ const config = {
 			precompress: false,
 			domain: '',
 			jekyll: false
-		})
+		}),
+		// The site is served from https://<user>.github.io/blog-site, so every
+		// route and asset URL needs this prefix. Use `base` from `$app/paths`
+		// when writing links.
+		paths: {
+			base: '/blog-site'
+		}
 	}
 };
 
