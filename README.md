@@ -1,38 +1,60 @@
-# create-svelte
+# blog-site
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+Derek Wang's personal blog, a place to write up things I've learned or built in my free time.
 
-## Creating a project
+**Live site:** https://derek-y-wang.github.io/blog-site/
 
-If you're seeing this, you've probably already done this step. Congrats!
+Built with [SvelteKit](https://kit.svelte.dev/) and hosted on GitHub Pages as a fully static, prerendered site.
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## Project layout
 
-# create a new project in my-app
-npm create svelte@latest my-app
+```
+src/
+  components/Header.svelte   # site header and nav (Posts, About)
+  routes/
+    +layout.js               # prerender = true for every page
+    +page.svelte             # home
+    posts/+page.svelte       # post list
+    about/+page.svelte       # about me
+static/                      # files copied as-is (favicon, etc.)
+docs/                        # build output served by GitHub Pages (committed)
 ```
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
 ```bash
+npm install
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+The site is served under the `/blog-site` base path (set in `svelte.config.js`), so the dev server is at http://localhost:5173/blog-site/.
 
-To create a production version of your app:
+When writing internal links, prefix them with `base` so they work both locally and on GitHub Pages:
+
+```svelte
+<script>
+  import { base } from '$app/paths';
+</script>
+
+<a href="{base}/about">About</a>
+```
+
+Leave off trailing slashes (`{base}/about`, not `{base}/about/`). Each page is built to a file like `about.html`, and GitHub Pages only serves that file at the address without a slash.
+
+## Building and deploying
 
 ```bash
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+This prerenders every page into `docs/` using `svelte-adapter-github`. To preview the production build locally, run `npm run preview` and open http://localhost:4173/blog-site/.
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+To deploy, commit the updated `docs/` folder and push to `main`. GitHub Pages is set to **Deploy from a branch → `main` / `/docs`** and republishes within a minute or two.
+
+## Other scripts
+
+| Command          | What it does                       |
+| ---------------- | ---------------------------------- |
+| `npm run check`  | Type-check with `svelte-check`     |
+| `npm run lint`   | Check formatting and lint          |
+| `npm run format` | Auto-format with Prettier          |
