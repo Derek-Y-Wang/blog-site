@@ -7,17 +7,17 @@
 		<meta http-equiv="content-security-policy" content="">
 		<link href="/blog-site/_app/immutable/assets/MediaPlaceholder-3966ce81.css" rel="stylesheet">
 		<link href="/blog-site/_app/immutable/assets/Header-f3c0c912.css" rel="stylesheet">
-		<link rel="modulepreload" href="/blog-site/_app/immutable/start-de8feb80.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/start-f263dd49.js">
 		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/index-fdd40d0b.js">
 		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/singletons-ea1985f6.js">
 		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/paths-2cc239d7.js">
 		<link rel="modulepreload" href="/blog-site/_app/immutable/components/layout.svelte-dcb44848.js">
 		<link rel="modulepreload" href="/blog-site/_app/immutable/modules/pages/_layout.js-9cbb603b.js">
 		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_layout-da46b06b.js">
-		<link rel="modulepreload" href="/blog-site/_app/immutable/components/pages/posts/part-1-building-shot-loop/_page.md-b68f2173.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/components/pages/posts/part-1-building-shot-loop/_page.md-eaeb34bf.js">
 		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/MediaPlaceholder-51df98b6.js">
 		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/Header-cc8c86cc.js">
-		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_page-9dfe96ce.js"><title>Building shot-loop, Part 1: Letting a coding agent run a video pipeline · Derek Wang</title><!-- HEAD_svelte-hvr9bc_START --><meta name="description" content="Why I built an AI video pipeline that a coding agent runs, how it's laid out, and what the first video cost."><!-- HEAD_svelte-hvr9bc_END -->
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_page-843276d7.js"><title>Building shot-loop, Part 1: Letting a coding agent run a video pipeline · Derek Wang</title><!-- HEAD_svelte-hvr9bc_START --><meta name="description" content="Why I built an AI video pipeline that a coding agent runs, how it's laid out, and what the first video cost."><!-- HEAD_svelte-hvr9bc_END -->
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">
@@ -30,10 +30,10 @@
       <li><a href="/blog-site/about" class="svelte-1m0de7o">About</a></li></ul></nav>
 </header>
 	<article class="svelte-2wrpi"><h1 class="svelte-2wrpi">Building shot-loop, Part 1: Letting a coding agent run a video pipeline</h1>
-		<p class="date svelte-2wrpi">November 16, 2026</p>
+		<p class="date svelte-2wrpi">November 1, 2026</p>
 		<p><em>Part 1 of 5 · Next: <a href="./part-2-idle-pods">Idle pods are the real bill</a></em></p>
-<p>For the last month I’ve been building something I call <strong>shot-loop</strong>: a pipeline for making short vertical videos (9:16, 720p, 24 fps, up to 45 seconds) for social media, where the thing actually driving the work is a coding agent. I’ve used both Claude Code and Codex for it. I talk to the agent, it plans the video with me, and then it goes off and runs the tools.</p>
-<p>This series is my write-up of what I learned along the way: what it costs, what broke, what the models refuse to do, and what it’s like to work with a few agents at once. All the numbers come from my own experiment logs from November 2026, so take them as “about” figures for that moment in time.</p>
+<p>Lately I’ve been building something I call <strong>shot-loop</strong>: a pipeline for making short vertical videos (9:16, 720p, 24 fps, up to 45 seconds) for social media, where the thing actually driving the work is a coding agent. I’ve used both Claude Code and Codex for it. I talk to the agent, it plans the video with me, and then it goes off and runs the tools.</p>
+<p>This series is my write-up of what I learned along the way: what it costs, what broke, what the models refuse to do, and what it’s like to work with a few agents at once. All the numbers come from my own experiment logs, so take them as “about” figures for that moment in time.</p>
 <h2>The idea</h2>
 <p>Making a 30-second video with AI tools isn’t hard anymore. The hard part is doing it <em>repeatably</em> without lighting money on fire. Video generation is the expensive step, and it’s very easy to burn through a GPU hour re-rendering a clip because the script was wrong in the first place.</p>
 <p>So the whole design is about doing the cheap things first and only spending money once the earlier, cheaper decisions are locked in.</p>
@@ -92,14 +92,14 @@
 </div>
 
 
-		<script type="module" data-sveltekit-hydrate="9ovkhf">
-			import { start } from "/blog-site/_app/immutable/start-de8feb80.js";
+		<script type="module" data-sveltekit-hydrate="8vjxda">
+			import { start } from "/blog-site/_app/immutable/start-f263dd49.js";
 
 			start({
 				assets: "/blog-site",
 				env: {},
-				target: document.querySelector('[data-sveltekit-hydrate="9ovkhf"]').parentNode,
-				version: "1794819402221",
+				target: document.querySelector('[data-sveltekit-hydrate="8vjxda"]').parentNode,
+				version: "1794820506231",
 				hydrate: {
 					node_ids: [0, 5],
 					data: [null,null],

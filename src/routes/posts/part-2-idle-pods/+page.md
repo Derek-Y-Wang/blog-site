@@ -1,6 +1,6 @@
 ---
 title: "Building shot-loop, Part 2: Idle pods are the real bill"
-date: 2026-11-16
+date: 2026-11-04
 series: Building shot-loop
 part: 2
 description: What the experiments actually cost, why hosted video is an opt-in, and the spending rules that came out of it.
@@ -14,7 +14,7 @@ _Part 2 of 5 · Previous: [Letting a coding agent run a video pipeline](./part-1
 
 When I started, I assumed the expensive part of AI video would be the generation itself. It mostly isn't. The expensive part is a GPU sitting there, billing by the second, while nothing happens.
 
-All figures here are from my experiment logs between November 13 and 16, 2026. They're "about" numbers, and the Higgsfield credit prices are what I pay when I top up.
+All figures here are from my experiment logs. They're "about" numbers, and the Higgsfield credit prices are what I pay when I top up.
 
 ## The first run, by the minute
 

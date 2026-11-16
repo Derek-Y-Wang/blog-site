@@ -12,10 +12,10 @@
       slug: path.split('/')[1],
       ...mod.metadata
     }))
-    // Newest first; parts of the same series in order.
+    // Most recent first. Posts published the same day: later series part first.
     .sort(
       (a, b) =>
-        isoDate(b.date).localeCompare(isoDate(a.date)) || (a.part ?? 0) - (b.part ?? 0)
+        isoDate(b.date).localeCompare(isoDate(a.date)) || (b.part ?? 0) - (a.part ?? 0)
     );
 </script>
 

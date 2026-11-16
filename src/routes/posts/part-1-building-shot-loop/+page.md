@@ -1,6 +1,6 @@
 ---
 title: "Building shot-loop, Part 1: Letting a coding agent run a video pipeline"
-date: 2026-11-16
+date: 2026-11-01
 series: Building shot-loop
 part: 1
 description: Why I built an AI video pipeline that a coding agent runs, how it's laid out, and what the first video cost.
@@ -12,9 +12,9 @@ description: Why I built an AI video pipeline that a coding agent runs, how it's
 
 _Part 1 of 5 · Next: [Idle pods are the real bill](./part-2-idle-pods)_
 
-For the last month I've been building something I call **shot-loop**: a pipeline for making short vertical videos (9:16, 720p, 24 fps, up to 45 seconds) for social media, where the thing actually driving the work is a coding agent. I've used both Claude Code and Codex for it. I talk to the agent, it plans the video with me, and then it goes off and runs the tools.
+Lately I've been building something I call **shot-loop**: a pipeline for making short vertical videos (9:16, 720p, 24 fps, up to 45 seconds) for social media, where the thing actually driving the work is a coding agent. I've used both Claude Code and Codex for it. I talk to the agent, it plans the video with me, and then it goes off and runs the tools.
 
-This series is my write-up of what I learned along the way: what it costs, what broke, what the models refuse to do, and what it's like to work with a few agents at once. All the numbers come from my own experiment logs from November 2026, so take them as "about" figures for that moment in time.
+This series is my write-up of what I learned along the way: what it costs, what broke, what the models refuse to do, and what it's like to work with a few agents at once. All the numbers come from my own experiment logs, so take them as "about" figures for that moment in time.
 
 ## The idea
 

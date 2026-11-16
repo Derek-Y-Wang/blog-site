@@ -1,6 +1,6 @@
 ---
 title: "Building shot-loop, Part 4: Prompting images, positive wording and guardrails"
-date: 2026-11-16
+date: 2026-11-11
 series: Building shot-loop
 part: 4
 description: A prompt format borrowed from presets, why "no" doesn't work at CFG 1, and the rules I won't bend.

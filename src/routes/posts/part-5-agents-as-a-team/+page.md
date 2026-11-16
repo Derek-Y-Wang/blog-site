@@ -1,6 +1,6 @@
 ---
 title: "Building shot-loop, Part 5: Working with agents as a team"
-date: 2026-11-16
+date: 2026-11-15
 series: Building shot-loop
 part: 5
 description: An instruction file, a free test suite, several agent sessions with different jobs, and the parts that are still unsolved.
@@ -71,7 +71,7 @@ There's a written proposal in the repo (not adopted yet) to loosen this a bit:
 
 ## What's still unknown
 
-Some honest limits, as of November 16, 2026:
+Some honest limits, as of this writing:
 
 - **Voice change** (a hosted tool that swaps the speaking voice on a clip) was tested at 1 credit per call, but the jobs hadn't finished when I wrote this, so I don't have results yet.
 - **Upscaling** and **Qwen Image Edit** were considered and skipped for now.

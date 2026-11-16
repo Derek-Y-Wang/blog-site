@@ -1,6 +1,6 @@
 ---
 title: "Building shot-loop, Part 3: Talking dogs and burned-in subtitles"
-date: 2026-11-16
+date: 2026-11-08
 series: Building shot-loop
 part: 3
 description: Speech, sound, and the strange ways the video model fails.
@@ -62,7 +62,7 @@ There are two ways to steer LTX with a picture, and they keep different things:
 - **Reference mode** keeps _who_ someone is, but is free to invent a new scene around them.
 - **Image-to-video** uses the picture as the first frame, so the scene stays close to it.
 
-On November 16 I tested image-to-video on an A40: 5- and 10-second clips at 9:16 and a 5-second clip at 16:9, all with an audio track, in about 17 minutes of pod time for about $0.17.
+In a later test I tried image-to-video on an A40: 5- and 10-second clips at 9:16 and a 5-second clip at 16:9, all with an audio track, in about 17 minutes of pod time for about $0.17.
 
 <MediaPlaceholder id="P3-d" caption="Reference mode vs. image-to-video." shows="side-by-side stills, same reference image, one clip from each mode." />
 
