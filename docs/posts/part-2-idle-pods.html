@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/blog-site/favicon.png" />
+		<meta name="viewport" content="width=device-width" />
+		<meta http-equiv="content-security-policy" content="">
+		<link href="/blog-site/_app/immutable/assets/MediaPlaceholder-3966ce81.css" rel="stylesheet">
+		<link href="/blog-site/_app/immutable/assets/Header-f3c0c912.css" rel="stylesheet">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/start-de8feb80.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/index-fdd40d0b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/singletons-ea1985f6.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/paths-2cc239d7.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/components/layout.svelte-dcb44848.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/modules/pages/_layout.js-9cbb603b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_layout-da46b06b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/components/pages/posts/part-2-idle-pods/_page.md-76ffe0c0.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/MediaPlaceholder-51df98b6.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/Header-cc8c86cc.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_page-9a8bbf0b.js"><title>Building shot-loop, Part 2: Idle pods are the real bill · Derek Wang</title><!-- HEAD_svelte-hvr9bc_START --><meta name="description" content="What the experiments actually cost, why hosted video is an opt-in, and the spending rules that came out of it."><!-- HEAD_svelte-hvr9bc_END -->
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">
+
+
+
+
+<div class="page svelte-2wrpi"><header class="svelte-1m0de7o"><h2 class="svelte-1m0de7o"><a href="/blog-site/" class="svelte-1m0de7o">Derek Wang</a></h2>
+  <nav><ul class="svelte-1m0de7o"><li><a href="/blog-site/posts" class="svelte-1m0de7o">Posts</a></li>
+      <li><a href="/blog-site/about" class="svelte-1m0de7o">About</a></li></ul></nav>
+</header>
+	<article class="svelte-2wrpi"><h1 class="svelte-2wrpi">Building shot-loop, Part 2: Idle pods are the real bill</h1>
+		<p class="date svelte-2wrpi">November 16, 2026</p>
+		<p><em>Part 2 of 5 · Previous: <a href="./part-1-building-shot-loop">Letting a coding agent run a video pipeline</a> · Next: <a href="./part-3-talking-dogs">Talking dogs and burned-in subtitles</a></em></p>
+<p>When I started, I assumed the expensive part of AI video would be the generation itself. It mostly isn’t. The expensive part is a GPU sitting there, billing by the second, while nothing happens.</p>
+<p>All figures here are from my experiment logs between November 13 and 16, 2026. They’re “about” numbers, and the Higgsfield credit prices are what I pay when I top up.</p>
+<h2>The first run, by the minute</h2>
+<p>Part 1’s sofa review cost about $0.40. Here’s where the time went:</p>
+<table><thead><tr><th>Step</th>
+<th>Time</th></tr></thead>
+<tbody><tr><td>Script, reference image, voiceover</td>
+<td>~4 min</td></tr>
+<tr><td>Waiting on me (token, choosing a GPU)</td>
+<td>~12 min</td></tr>
+<tr><td>Pod boot, failed downloads, restart</td>
+<td>~8 min</td></tr>
+<tr><td>Rendering five clips</td>
+<td>~14 min</td></tr>
+<tr><td>Review and stitch</td>
+<td>~2 min</td></tr>
+<tr><td><strong>Total</strong></td>
+<td><strong>~34 min</strong></td></tr></tbody></table>
+<figure class="placeholder svelte-bgdmwx"><div class="box svelte-bgdmwx"><span class="tag svelte-bgdmwx">Media placeholder P2-a</span>
+		<span class="shows">a simple horizontal bar of the table above, with the GPU-billing minutes marked.</span></div>
+	<figcaption class="svelte-bgdmwx">Where the 34 minutes went.</figcaption>
+</figure>
+<p>Only about 14 of those minutes were the GPU doing the thing I rented it for.</p>
+<h2>Experiment 3: when the plan said $0.70</h2>
+<p>The third experiment was bigger: 12 clips on the pod plus narration. The plan said about <strong>$0.70</strong>. It cost about <strong>$2.10</strong>.</p>
+<ul><li>Pod, about 2.7 hours at $0.59/hr: about $1.60 (the plan said about $0.50, and about $1.10 of it was idle)</li>
+<li>Narration, first pass (7 jobs): 4.2 credits</li>
+<li>Narration, regenerating 4 lines: 1.8 credits</li>
+<li>Narration, changing to another voice, 6 lines: 2.7 credits</li>
+<li>Higgsfield total: 8.7 credits, about $0.46 to $0.51</li></ul>
+<p>The pod cost three times the plan for two boring reasons. My local network went down for about two hours while the pod sat there billing. And the pod took about 9.5 minutes to boot instead of the 3.5 I’d seen before.</p>
+<figure class="placeholder svelte-bgdmwx"><div class="box svelte-bgdmwx"><span class="tag svelte-bgdmwx">Media placeholder P2-b</span>
+		<span class="shows">two stacked bars, planned ~$0.70 vs. actual ~$2.10, split into active pod, idle pod and voice.</span></div>
+	<figcaption class="svelte-bgdmwx">Experiment 3, plan vs. actual.</figcaption>
+</figure>
+<p>None of that was the model’s fault. It was all overhead.</p>
+<h2>Hosted video costs about 10x more</h2>
+<p>In experiment 2 I tried two clips from a hosted video model through Higgsfield instead of running LTX myself: a 5-second clip for 8.75 credits and a 6-second clip for 10.50 credits. That experiment came to about $1.50 total.</p>
+<p>For comparison, an A40 on RunPod works out to roughly <strong>$0.004 per second of finished video</strong> in GPU time, since a 5-second clip takes about 2 minutes to render. The hosted clips came out at roughly <strong>10 times</strong> that per second.</p>
+<p>Hosted models are nicer in places, but not ten-times nicer for a talking dog. So the repo now plans <strong>every shot on LTX by default</strong>. Hosted video is offered as an opt-in per shot, always with the price shown next to it.</p>
+<h2>Put boot and idle time in the estimate</h2>
+<p>The estimates that went wrong all left out the same things. Here’s what I use now:</p>
+<ul><li>A fresh pod takes about <strong>3.5 to 9.5 minutes</strong> to be ready.</li>
+<li>A 5-second clip takes about <strong>2 minutes</strong> on an A40.</li>
+<li>Whatever time I spend reviewing while the pod is up is billed too.</li></ul>
+<p>An estimate that’s just “number of clips × render time” will always come in low.</p>
+<h2>The money rules</h2>
+<p>These are all written into the agent’s instructions now:</p>
+<ul><li><strong>Prices are always shown as bullets</strong>: credits and dollars for Higgsfield, pod time and dollars for RunPod.</li>
+<li><strong>The agent asks before spending.</strong> No exceptions, including redos.</li>
+<li><strong>Pods are deleted after a batch.</strong> The one exception is image pods, which stay up until I’ve approved every image I want, because rebooting for one more image costs more than waiting.</li>
+<li><strong>Costs are estimated from uptime.</strong> RunPod’s billing API lagged behind after I deleted a pod, so the agent can’t rely on it for the final number.</li></ul>
+<p>That last one surprised me. I expected billing to be the one thing I could trust in real time.</p>
+<p><em>Next up: <a href="./part-3-talking-dogs">Part 3, Talking dogs and burned-in subtitles</a>.</em></p></article>
+</div>
+
+
+		<script type="module" data-sveltekit-hydrate="436o5k">
+			import { start } from "/blog-site/_app/immutable/start-de8feb80.js";
+
+			start({
+				assets: "/blog-site",
+				env: {},
+				target: document.querySelector('[data-sveltekit-hydrate="436o5k"]').parentNode,
+				version: "1794819402221",
+				hydrate: {
+					node_ids: [0, 6],
+					data: [null,null],
+					form: null,
+					error: null
+				}
+			});
+		</script>
+	</div>
+	</body>
+</html>

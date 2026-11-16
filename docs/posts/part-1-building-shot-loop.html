@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/blog-site/favicon.png" />
+		<meta name="viewport" content="width=device-width" />
+		<meta http-equiv="content-security-policy" content="">
+		<link href="/blog-site/_app/immutable/assets/MediaPlaceholder-3966ce81.css" rel="stylesheet">
+		<link href="/blog-site/_app/immutable/assets/Header-f3c0c912.css" rel="stylesheet">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/start-de8feb80.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/index-fdd40d0b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/singletons-ea1985f6.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/paths-2cc239d7.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/components/layout.svelte-dcb44848.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/modules/pages/_layout.js-9cbb603b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_layout-da46b06b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/components/pages/posts/part-1-building-shot-loop/_page.md-b68f2173.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/MediaPlaceholder-51df98b6.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/Header-cc8c86cc.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_page-9dfe96ce.js"><title>Building shot-loop, Part 1: Letting a coding agent run a video pipeline · Derek Wang</title><!-- HEAD_svelte-hvr9bc_START --><meta name="description" content="Why I built an AI video pipeline that a coding agent runs, how it's laid out, and what the first video cost."><!-- HEAD_svelte-hvr9bc_END -->
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">
+
+
+
+
+<div class="page svelte-2wrpi"><header class="svelte-1m0de7o"><h2 class="svelte-1m0de7o"><a href="/blog-site/" class="svelte-1m0de7o">Derek Wang</a></h2>
+  <nav><ul class="svelte-1m0de7o"><li><a href="/blog-site/posts" class="svelte-1m0de7o">Posts</a></li>
+      <li><a href="/blog-site/about" class="svelte-1m0de7o">About</a></li></ul></nav>
+</header>
+	<article class="svelte-2wrpi"><h1 class="svelte-2wrpi">Building shot-loop, Part 1: Letting a coding agent run a video pipeline</h1>
+		<p class="date svelte-2wrpi">November 16, 2026</p>
+		<p><em>Part 1 of 5 · Next: <a href="./part-2-idle-pods">Idle pods are the real bill</a></em></p>
+<p>For the last month I’ve been building something I call <strong>shot-loop</strong>: a pipeline for making short vertical videos (9:16, 720p, 24 fps, up to 45 seconds) for social media, where the thing actually driving the work is a coding agent. I’ve used both Claude Code and Codex for it. I talk to the agent, it plans the video with me, and then it goes off and runs the tools.</p>
+<p>This series is my write-up of what I learned along the way: what it costs, what broke, what the models refuse to do, and what it’s like to work with a few agents at once. All the numbers come from my own experiment logs from November 2026, so take them as “about” figures for that moment in time.</p>
+<h2>The idea</h2>
+<p>Making a 30-second video with AI tools isn’t hard anymore. The hard part is doing it <em>repeatably</em> without lighting money on fire. Video generation is the expensive step, and it’s very easy to burn through a GPU hour re-rendering a clip because the script was wrong in the first place.</p>
+<p>So the whole design is about doing the cheap things first and only spending money once the earlier, cheaper decisions are locked in.</p>
+<h2>Seven stages, one at a time</h2>
+<p>Every video goes through the same seven stages, and I approve each one before the agent moves on to the next:</p>
+<ol><li><strong>Script</strong>: the treatment, a beat sheet, a continuity sheet, and how the audio will work. Costs nothing.</li>
+<li><strong>Scene</strong>: a shot list with direction and a base prompt per scene, reference images, and one still per scene as a storyboard. A few cents each.</li>
+<li><strong>Dialogue</strong>: the actual lines, who says them, and whether they’re spoken on camera or as a voiceover. Free again.</li>
+<li><strong>Video</strong>: first a prompt review, then the clips themselves, rendered on a rented GPU.</li>
+<li><strong>Stitching</strong>: join the approved clips into one picture, level the speech, cover up any text the model burned in.</li>
+<li><strong>Sound + music</strong>: voiceover, ambience, effects, music and captions, mixed over the cut.</li>
+<li><strong>Cleanup</strong>: quick checks, I watch the result and sign off, raw files get deleted, the GPU is confirmed gone, and the seeds and prompts get written back so the video can be re-rendered later.</li></ol>
+<figure class="placeholder svelte-bgdmwx"><div class="box svelte-bgdmwx"><span class="tag svelte-bgdmwx">Media placeholder P1-a</span>
+		<span class="shows">a simple left-to-right diagram of the seven stages, with the paid ones (Scene, Video, Sound + music) highlighted.</span></div>
+	<figcaption class="svelte-bgdmwx">The seven stages.</figcaption>
+</figure>
+<p>The order is the point: words, then stills, then video, then the cut, then sound. By the time anything touches a GPU, I’ve already agreed on the script, the look, and every line of dialogue.</p>
+<p>The agent also has to say which stage it’s in at the start of every reply, it never skips or reorders stages without asking, and it shows me the cost as a bullet list before spending anything.</p>
+<h2>Who does what</h2>
+<p>The tools are split by what each one is good (and cheap) at:</p>
+<ul><li><strong>Video, including on-camera speech:</strong> the open LTX-2.5 model in ComfyUI, on a GPU I rent by the hour from RunPod.</li>
+<li><strong>Images, voiceover, music and sound effects:</strong> Higgsfield, a hosted service that charges in credits.</li>
+<li><strong>The cut:</strong> good old ffmpeg.</li></ul>
+<p>Hosted video models are still an option, but as an opt-in “premium” choice per shot, for reasons I’ll get into in Part 2.</p>
+<p>The repo itself holds docs, configs, ComfyUI workflows and scripts, and <strong>never media</strong>. Renders live on my machine and stay out of git.</p>
+<h2>Why the rules live in a file</h2>
+<p>The most useful decision I made early on was to put all the rules in one instruction file, <code>AGENTS.md</code>, plus a set of “skills” (smaller how-to files for specific jobs). Every agent session reads the same file, so it behaves the same way every time, whether it’s Claude Code or Codex, today or next week.</p>
+<p>That also means the rules can be <em>tested</em>. More on that in Part 5.</p>
+<h2>The first run: Milo reviews a sofa</h2>
+<p>The first end-to-end test was a 31-second video of Milo, a (completely made up) golden retriever, reviewing a sofa.</p>
+<figure class="placeholder svelte-bgdmwx"><div class="box svelte-bgdmwx"><span class="tag svelte-bgdmwx">Media placeholder P1-b</span>
+		<span class="shows">the AI-generated golden retriever reference image.</span></div>
+	<figcaption class="svelte-bgdmwx">Milo, our test subject. He isn't real.</figcaption>
+</figure>
+<p>From the first message to the finished video took <strong>34 minutes</strong> and cost <strong>about $0.40 all-in</strong>:</p>
+<ul><li>RunPod A40 GPU, about 23.5 minutes at $0.59/hr: about $0.24</li>
+<li>Pod disk: under $0.05</li>
+<li>Higgsfield reference image: 0.25 credits</li>
+<li>Higgsfield voiceover, 5 lines at 0.30 each: 1.50 credits</li>
+<li>Higgsfield total: 1.85 credits, roughly $0.10 to $0.16 at my top-up prices</li></ul>
+<p>No hosted video model was used at all. Every clip came out of LTX on the rented GPU.</p>
+<figure class="placeholder svelte-bgdmwx"><div class="box svelte-bgdmwx"><span class="tag svelte-bgdmwx">Media placeholder P1-c</span>
+		<span class="shows">one still from the video (or a short compressed clip, since the full 31 s file is heavy for GitHub Pages).</span></div>
+	<figcaption class="svelte-bgdmwx">'Milo Reviews the Sofa', the first video out of the pipeline.</figcaption>
+</figure>
+<p>Where those 34 minutes went is a little humbling: about 4 minutes on script, image and voice, about <strong>12 minutes waiting on me</strong>, about 8 minutes on pod boot, failed downloads and a restart, about 14 minutes actually rendering five clips, and about 2 minutes on review and stitching.</p>
+<h2>The trailing-space bug</h2>
+<p>Those failed downloads deserve their own story.</p>
+<p>The LTX models are gated on Hugging Face, so the GPU needs a token to download them. The agent couldn’t read the token from my environment, so I created it as a RunPod secret instead. My first secret had a <strong>trailing space</strong> in it. Every gated download then failed with <code>Illegal header value</code>, because a token with a space on the end isn’t a valid HTTP header.</p>
+<p>Once I fixed the secret and restarted the pod, everything worked, but I lost about 5 minutes of idle GPU time to a space character.</p>
+<p>Two rules went into the repo because of this:</p>
+<ul><li>A pod only reads its secrets <strong>at boot</strong>, so after fixing a secret you have to restart.</li>
+<li>The request that creates a pod has to be sent exactly as written, and <strong>never rebuilt from a “get” call</strong>. “Get” calls show secrets as <code>[redacted]</code>, and if you send that back, the token literally becomes the string <code>[redacted]</code>.</li></ul>
+<p>Neither of those is hard. Both are the kind of thing an agent will happily get wrong every single session unless it’s written down.</p>
+<p><em>Next up: <a href="./part-2-idle-pods">Part 2, Idle pods are the real bill</a>.</em></p></article>
+</div>
+
+
+		<script type="module" data-sveltekit-hydrate="9ovkhf">
+			import { start } from "/blog-site/_app/immutable/start-de8feb80.js";
+
+			start({
+				assets: "/blog-site",
+				env: {},
+				target: document.querySelector('[data-sveltekit-hydrate="9ovkhf"]').parentNode,
+				version: "1794819402221",
+				hydrate: {
+					node_ids: [0, 5],
+					data: [null,null],
+					form: null,
+					error: null
+				}
+			});
+		</script>
+	</div>
+	</body>
+</html>

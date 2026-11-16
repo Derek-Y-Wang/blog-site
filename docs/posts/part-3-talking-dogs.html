@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/blog-site/favicon.png" />
+		<meta name="viewport" content="width=device-width" />
+		<meta http-equiv="content-security-policy" content="">
+		<link href="/blog-site/_app/immutable/assets/MediaPlaceholder-3966ce81.css" rel="stylesheet">
+		<link href="/blog-site/_app/immutable/assets/Header-f3c0c912.css" rel="stylesheet">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/start-de8feb80.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/index-fdd40d0b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/singletons-ea1985f6.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/paths-2cc239d7.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/components/layout.svelte-dcb44848.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/modules/pages/_layout.js-9cbb603b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_layout-da46b06b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/components/pages/posts/part-3-talking-dogs/_page.md-fbcc556a.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/MediaPlaceholder-51df98b6.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/Header-cc8c86cc.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_page-a2dce010.js"><title>Building shot-loop, Part 3: Talking dogs and burned-in subtitles · Derek Wang</title><!-- HEAD_svelte-hvr9bc_START --><meta name="description" content="Speech, sound, and the strange ways the video model fails."><!-- HEAD_svelte-hvr9bc_END -->
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">
+
+
+
+
+<div class="page svelte-2wrpi"><header class="svelte-1m0de7o"><h2 class="svelte-1m0de7o"><a href="/blog-site/" class="svelte-1m0de7o">Derek Wang</a></h2>
+  <nav><ul class="svelte-1m0de7o"><li><a href="/blog-site/posts" class="svelte-1m0de7o">Posts</a></li>
+      <li><a href="/blog-site/about" class="svelte-1m0de7o">About</a></li></ul></nav>
+</header>
+	<article class="svelte-2wrpi"><h1 class="svelte-2wrpi">Building shot-loop, Part 3: Talking dogs and burned-in subtitles</h1>
+		<p class="date svelte-2wrpi">November 16, 2026</p>
+		<p><em>Part 3 of 5 · Previous: <a href="./part-2-idle-pods">Idle pods are the real bill</a> · Next: <a href="./part-4-prompting-images">Prompting images</a></em></p>
+<p>This is the part where things get weird. Most of what I learned about speech and sound came from the model doing something I didn’t ask for, and me then writing a rule so the agent wouldn’t be surprised by it again.</p>
+<h2>The dog can talk, but not in the same voice twice</h2>
+<p>LTX can generate speech right inside the video clip. You write the line into the prompt, and the character says it on camera, lip movement included. It costs nothing beyond pod time, which is great.</p>
+<p>When I ran Whisper over the clips, the transcripts matched the written lines. The problem is that <strong>every clip gets a different voice.</strong> If Milo talks in clip 2 and again in clip 4, he sounds like two different dogs.</p>
+<figure class="placeholder svelte-bgdmwx"><div class="box svelte-bgdmwx"><span class="tag svelte-bgdmwx">Media placeholder P3-a</span>
+		<span class="shows">stills from two consecutive talking clips, or a short audio comparison.</span></div>
+	<figcaption class="svelte-bgdmwx">Same dog, different voice.</figcaption>
+</figure>
+<p>So the rules are:</p>
+<ul><li><strong>One speaker per clip.</strong></li>
+<li><strong>Recurring characters get a hosted voiceover</strong> (from Higgsfield) instead of on-camera speech, so they sound the same every time.</li></ul>
+<h2>Subtitles nobody asked for</h2>
+<p>LTX loves burning subtitles into the picture. It does it even when the prompt says “no captions, no text.” I tried a stronger “no text” line, and it didn’t help.</p>
+<p>So the workaround lives in the cut instead of the prompt: during stitching, burned-in text gets covered with caption bars.</p>
+<figure class="placeholder svelte-bgdmwx"><div class="box svelte-bgdmwx"><span class="tag svelte-bgdmwx">Media placeholder P3-b</span>
+		<span class="shows">a frame with LTX's burned-in text next to the same frame after the caption bar covers it.</span></div>
+	<figcaption class="svelte-bgdmwx">Subtitles nobody asked for.</figcaption>
+</figure>
+<h2>Sound is quiet, and every clip is different</h2>
+<p>The clip audio from LTX is quiet, almost silent when nobody’s speaking, and each clip comes out at a different loudness. Stitch them as-is and the volume jumps around between shots.</p>
+<p>Now every clip gets leveled before mixing, and the final cut is normalized to a target loudness.</p>
+<h2>The voiceover read the stage direction out loud</h2>
+<p>Voiceover models let you add delivery tags, little notes like “(whispering)” or “(excited)“. In one test, <strong>4 out of 6 lines</strong> came back with the model <em>saying the tag out loud</em> as part of the line.</p>
+<p>The fix: keep tags short, and <strong>transcribe every voiceover line</strong> afterwards to check it says what it should. That check is cheap, and it’s the only way to catch this without listening to everything yourself.</p>
+<h2>One reference per shot</h2>
+<p>To keep a character looking the same across clips, LTX can take a reference image. But it takes exactly <strong>one</strong> per shot, center-cropped to 512×512. A scene with two characters can’t have two references.</p>
+<p>For group scenes I ended up generating a single reference image with everyone in it.</p>
+<figure class="placeholder svelte-bgdmwx"><div class="box svelte-bgdmwx"><span class="tag svelte-bgdmwx">Media placeholder P3-c</span>
+		<span class="shows">the AI-generated character reference image.</span></div>
+	<figcaption class="svelte-bgdmwx">Mia, a fictional 'day in my life' character.</figcaption>
+</figure>
+<h2>Reference mode vs. image-to-video</h2>
+<p>There are two ways to steer LTX with a picture, and they keep different things:</p>
+<ul><li><strong>Reference mode</strong> keeps <em>who</em> someone is, but is free to invent a new scene around them.</li>
+<li><strong>Image-to-video</strong> uses the picture as the first frame, so the scene stays close to it.</li></ul>
+<p>On November 16 I tested image-to-video on an A40: 5- and 10-second clips at 9:16 and a 5-second clip at 16:9, all with an audio track, in about 17 minutes of pod time for about $0.17.</p>
+<figure class="placeholder svelte-bgdmwx"><div class="box svelte-bgdmwx"><span class="tag svelte-bgdmwx">Media placeholder P3-d</span>
+		<span class="shows">side-by-side stills, same reference image, one clip from each mode.</span></div>
+	<figcaption class="svelte-bgdmwx">Reference mode vs. image-to-video.</figcaption>
+</figure>
+<p>The speech and lip sync in those clips were judged by me, not the agent, which brings me to the biggest limit of all.</p>
+<h2>The agent can’t watch the video</h2>
+<p>The agent can’t watch video or listen to audio. It can run Whisper and check loudness numbers, but it can’t tell me whether a dog’s expression looks skeptical or whether a voice sounds right.</p>
+<p>So the rule is simple: <strong>every generated file gets shown to me in the app, and I decide.</strong> The agent does the planning, bookkeeping, rendering and checking. Taste stays with the human.</p>
+<p><em>Next up: <a href="./part-4-prompting-images">Part 4, Prompting images: positive wording and guardrails</a>.</em></p></article>
+</div>
+
+
+		<script type="module" data-sveltekit-hydrate="1ea3bbx">
+			import { start } from "/blog-site/_app/immutable/start-de8feb80.js";
+
+			start({
+				assets: "/blog-site",
+				env: {},
+				target: document.querySelector('[data-sveltekit-hydrate="1ea3bbx"]').parentNode,
+				version: "1794819402221",
+				hydrate: {
+					node_ids: [0, 7],
+					data: [null,null],
+					form: null,
+					error: null
+				}
+			});
+		</script>
+	</div>
+	</body>
+</html>

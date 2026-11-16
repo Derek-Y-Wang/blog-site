@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/blog-site/favicon.png" />
+		<meta name="viewport" content="width=device-width" />
+		<meta http-equiv="content-security-policy" content="">
+		<link href="/blog-site/_app/immutable/assets/MediaPlaceholder-3966ce81.css" rel="stylesheet">
+		<link href="/blog-site/_app/immutable/assets/Header-f3c0c912.css" rel="stylesheet">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/start-de8feb80.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/index-fdd40d0b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/singletons-ea1985f6.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/paths-2cc239d7.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/components/layout.svelte-dcb44848.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/modules/pages/_layout.js-9cbb603b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_layout-da46b06b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/components/pages/posts/part-4-prompting-images/_page.md-a35fd990.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/MediaPlaceholder-51df98b6.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/Header-cc8c86cc.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_page-54c13cf0.js"><title>Building shot-loop, Part 4: Prompting images, positive wording and guardrails · Derek Wang</title><!-- HEAD_svelte-hvr9bc_START --><meta name="description" content="A prompt format borrowed from presets, why &quot;no&quot; doesn't work at CFG 1, and the rules I won't bend."><!-- HEAD_svelte-hvr9bc_END -->
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">
+
+
+
+
+<div class="page svelte-2wrpi"><header class="svelte-1m0de7o"><h2 class="svelte-1m0de7o"><a href="/blog-site/" class="svelte-1m0de7o">Derek Wang</a></h2>
+  <nav><ul class="svelte-1m0de7o"><li><a href="/blog-site/posts" class="svelte-1m0de7o">Posts</a></li>
+      <li><a href="/blog-site/about" class="svelte-1m0de7o">About</a></li></ul></nav>
+</header>
+	<article class="svelte-2wrpi"><h1 class="svelte-2wrpi">Building shot-loop, Part 4: Prompting images, positive wording and guardrails</h1>
+		<p class="date svelte-2wrpi">November 16, 2026</p>
+		<p><em>Part 4 of 5 · Previous: <a href="./part-3-talking-dogs">Talking dogs and burned-in subtitles</a> · Next: <a href="./part-5-agents-as-a-team">Working with agents as a team</a></em></p>
+<p>Video gets all the attention, but most of the stages in shot-loop actually run on images: references, storyboard stills, first frames. So I spent a surprising amount of time on how to write image prompts.</p>
+<h2>A second workflow: Qwen-Image</h2>
+<p>Alongside the video pipeline there’s a second workflow that runs <strong>Qwen-Image 2.1</strong> on RunPod. I use it for standalone high-resolution images, and for content the hosted image models sometimes refuse even when it’s harmless.</p>
+<p>Qwen came with a lesson right away: it runs at <strong>CFG 1</strong>, which means a negative prompt does nothing at all. “No bag” doesn’t remove the bag. You have to say what you <em>do</em> want instead:</p>
+<table><thead><tr><th>Instead of…</th>
+<th>Write…</th></tr></thead>
+<tbody><tr><td>“no bag”</td>
+<td>“empty hands”</td></tr>
+<tr><td>“no text, no watermark”</td>
+<td>“a clean unmarked image”</td></tr>
+<tr><td>“no other people”</td>
+<td>“with only the dog”</td></tr></tbody></table>
+<h2>A prompt format with a fixed order</h2>
+<p>I borrowed the prompt structure from the way Higgsfield writes its own presets. Every prompt fills the same slots in the same order:</p>
+<ol><li>Role and framing</li>
+<li>Subject</li>
+<li>Placement and surface</li>
+<li>Light</li>
+<li>Camera</li>
+<li>Realism</li>
+<li>A “preserve” sentence, when a reference image is used</li>
+<li>A short quality tail</li>
+<li>Exclusions (as a short negative tail on Higgsfield, or as positive wording on Qwen)</li></ol>
+<p>Here’s an example for a pet reference image:</p>
+<pre class="language-text"><!-- HTML_TAG_START --><code class="language-text">Square reference portrait of a golden retriever, head and shoulders centered
+in the frame, cream-colored coat, dark brown eyes, dark nose, soft floppy ears,
+sitting on a plain neutral living-room floor with an empty softly blurred
+background, soft window light from the left with a gentle shadow, eye-level
+camera, 85 mm look, shallow depth of field, visible fine fur texture with
+natural asymmetry, unretouched natural photography, sharp focus, 4K, a clean
+unmarked image with only the dog.</code><!-- HTML_TAG_END --></pre>
+<p>A fixed order sounds fussy, but it makes prompts easy to compare, and it means the agent always remembers to describe the light and the camera.</p>
+<h2>Character sheets</h2>
+<p>For characters that show up across a whole video, I generate a <strong>character sheet</strong>: a portrait on one side, the full body on the other. The video model only sees one reference, but the sheet gives me (and the agent writing later prompts) everything about how the character looks.</p>
+<figure class="placeholder svelte-bgdmwx"><div class="box svelte-bgdmwx"><span class="tag svelte-bgdmwx">Media placeholder P4-a</span>
+		<span class="shows">a Qwen-generated sheet for a fictional character. Not yet approved as a final, so check before using.</span></div>
+	<figcaption class="svelte-bgdmwx">A character sheet: portrait on the left, full body on the right.</figcaption>
+</figure>
+<h2>Wording lessons</h2>
+<p>A few things I only learned by getting them wrong:</p>
+<ul><li><strong>“Chest-up” comes out waist-up.</strong> If you want a tight portrait, say “head and shoulders filling the frame.”</li>
+<li><strong>Name every distinctive part of an outfit</strong>, or the model drops it. If the jacket has a patch on the sleeve, the prompt has to say so.</li>
+<li><strong>“Sheen” and glitter make skin look oily.</strong> Leave them out of anything near a face.</li></ul>
+<figure class="placeholder svelte-bgdmwx"><div class="box svelte-bgdmwx"><span class="tag svelte-bgdmwx">Media placeholder P4-b</span>
+		<span class="shows">two crops of the same character, one from each wording.</span></div>
+	<figcaption class="svelte-bgdmwx">'Chest-up' vs. 'head and shoulders filling the frame'.</figcaption>
+</figure>
+<h2>Guardrails</h2>
+<p>Some rules aren’t about quality at all. These are written down so that no agent session ever has to make a judgment call on them:</p>
+<ul><li><strong>Characters in swimwear or any revealing outfit are always written as clearly adult.</strong> The prompt card says age 25, and it’s shown visibly, never added silently.</li>
+<li><strong>Images judged explicit never get uploaded</strong> to a hosted service. They stay on my machine.</li>
+<li><strong>Prompts and costs are shown before anything is generated.</strong> Same rule as everywhere else in the pipeline.</li></ul>
+<p>The agent is very good at following rules like these. It’s much less reliable at inventing them on the spot, which is why they’re in a file and not just in my head.</p>
+<p><em>Next up: <a href="./part-5-agents-as-a-team">Part 5, Working with agents as a team</a>.</em></p></article>
+</div>
+
+
+		<script type="module" data-sveltekit-hydrate="1msws8f">
+			import { start } from "/blog-site/_app/immutable/start-de8feb80.js";
+
+			start({
+				assets: "/blog-site",
+				env: {},
+				target: document.querySelector('[data-sveltekit-hydrate="1msws8f"]').parentNode,
+				version: "1794819402221",
+				hydrate: {
+					node_ids: [0, 8],
+					data: [null,null],
+					form: null,
+					error: null
+				}
+			});
+		</script>
+	</div>
+	</body>
+</html>
