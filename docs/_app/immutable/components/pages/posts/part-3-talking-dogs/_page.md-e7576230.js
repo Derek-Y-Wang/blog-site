@@ -1,0 +1,1 @@
+import"../../../../chunks/index-73dfab51.js";import"../../../../chunks/MediaPlaceholder-5aa6a131.js";import{P as r,m as e}from"../../../../chunks/_page-bf80c9f3.js";export{r as default,e as metadata};

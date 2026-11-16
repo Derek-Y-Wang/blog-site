@@ -7,16 +7,21 @@
   // its frontmatter as `metadata`.
   const modules = import.meta.glob('./*/+page.md', { eager: true });
 
-  const posts = Object.entries(modules)
+  // Sorted most recent first. Posts published the same day: later series part first.
+  const newestFirst = Object.entries(modules)
     .map(([path, mod]) => ({
       slug: path.split('/')[1],
       ...mod.metadata
     }))
-    // Most recent first. Posts published the same day: later series part first.
     .sort(
       (a, b) =>
         isoDate(b.date).localeCompare(isoDate(a.date)) || (b.part ?? 0) - (a.part ?? 0)
     );
+
+  // Sort toggle at the top of the list. Defaults to newest first, which is
+  // also what the prerendered page shows before JavaScript loads.
+  let order = 'newest';
+  $: posts = order === 'newest' ? newestFirst : [...newestFirst].reverse();
 </script>
 
 <svelte:head>
@@ -25,7 +30,18 @@
 
 <div class="page">
   <Header />
-  <h2>All Posts</h2>
+  <div class="title-row">
+    <h2>All Posts</h2>
+    {#if posts.length > 1}
+      <label class="sort">
+        Sort by date
+        <select bind:value={order}>
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+        </select>
+      </label>
+    {/if}
+  </div>
 
   {#if posts.length === 0}
     <p>Nothing to see here!</p>
@@ -50,6 +66,31 @@
     margin-left: auto;
     margin-right: auto;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  .title-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+  }
+
+  .sort {
+    font-size: 14px;
+    color: #707070;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .sort select {
+    font: inherit;
+    color: #303030;
+    padding: 0.2em 0.4em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
   }
 
   .posts {
