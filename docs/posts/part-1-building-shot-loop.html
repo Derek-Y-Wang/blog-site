@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/blog-site/favicon.png" />
+		<meta name="viewport" content="width=device-width" />
+		<meta http-equiv="content-security-policy" content="">
+		<link href="/blog-site/_app/immutable/assets/_page-bfb050a1.css" rel="stylesheet">
+		<link href="/blog-site/_app/immutable/assets/Header-f3c0c912.css" rel="stylesheet">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/start-9e6de9a9.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/index-009b82ab.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/singletons-5025e664.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/paths-2cc239d7.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/components/layout.svelte-f693a3fd.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/modules/pages/_layout.js-9cbb603b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_layout-da46b06b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/components/pages/posts/part-1-building-shot-loop/_page.md-1c11426c.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_page-b930dc5f.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/Header-bf9fbf27.js"><title>Building shot-loop, Part 1: Letting a coding agent run a video pipeline · Derek Wang</title><!-- HEAD_svelte-hvr9bc_START --><meta name="description" content="Why I built an AI video pipeline that a coding agent runs, how it came together, and what the first video cost."><!-- HEAD_svelte-hvr9bc_END -->
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">
+
+
+
+
+<div class="page svelte-2wrpi"><header class="svelte-1m0de7o"><h2 class="svelte-1m0de7o"><a href="/blog-site/" class="svelte-1m0de7o">Derek Wang</a></h2>
+  <nav><ul class="svelte-1m0de7o"><li><a href="/blog-site/posts" class="svelte-1m0de7o">Posts</a></li>
+      <li><a href="/blog-site/about" class="svelte-1m0de7o">About</a></li></ul></nav>
+</header>
+	<article class="svelte-2wrpi"><h1 class="svelte-2wrpi">Building shot-loop, Part 1: Letting a coding agent run a video pipeline</h1>
+		<p class="date svelte-2wrpi">November 1, 2026</p>
+		<p><em>Part 1 of the “Building shot-loop” series. More parts are coming soon.</em></p>
+<p>During my time as a software engineer at TikTok, our team was given early internal access to Seedance 2.0 for testing, before its release in China and the US, and a few of us used it to make short videos. Recognizing the growing importance of UGC, I wanted to continue doing the same and I quickly ran into a problem: running these video models through a hosted service such as Higgsfield is expensive. I therefore set out to move the most expensive step, video generation, onto open-source models.</p>
+<p>The result is <strong>shot-loop</strong>, a pipeline for producing short vertical videos (9:16, 720p, 24 fps, up to 45 seconds) for social media, in which a coding agent drives the execution. I describe what I want, the agent plans the video with me, and it then runs the tools.</p>
+<p>This series documents what I learned along the way: what it costs, what failed, what the models will not do, and what it is like to work with several agents at once. All figures come from my own experiment logs and should be read as approximate, reflecting prices at the time.</p>
+<h2>The concept</h2>
+<p>Making a 30-second video with AI tools is no longer difficult. The difficulty lies in doing it <em>repeatably</em> at a reasonable cost. My first experiment on Higgsfield, using Seedance 2.0, cost around <strong>$8 to $9 for a single 40-second clip</strong>. At that price, producing videos on a regular basis is not practical.</p>
+<p>Video generation is the most expensive step, and it is easy to spend a full GPU hour re-rendering a clip because the script was wrong in the first place. The design therefore does the inexpensive work first and spends money only once the earlier, cheaper decisions are settled.</p>
+<h2>Cost cutting and open-weight models</h2>
+<p>Intially to reduce costs, I turned to renting GPUs online and hosting the models myself. I evaluated several of these services and tried a range of models, from Wan 2.3 to LTX 2.3 and 2.5, to understand what each model could do its limitations and how flexible it was. For example Wan 2.3 did not generate sound while LTX 2.3 did.</p>
+<p>Initially I relied on workflows shared by the ComfyUI community. Over time, I found they were solid foundations but not flexible enough out of the box to match workflows that Higgsfield had inplace. This is the central trade-off between a platform like Higgsfield and self-hosting: the platform offers a polished experience, while self-hosting offers a lower price along with many rough edges. To address those, I had Claude write the custom nodes and features I needed.</p>
+<p>Both Higgsfield and my GPU rental platform offered ways for an agent to operate them. It eventually became clear <strong>that the simplest setup was to let agents manage both and run a hybrid model</strong>: video generation goes to open-weight models on rented GPUs, and Higgsfield handles everything else, since its prices for images, voice and music are reasonable.</p>
+<h2>The first run: Milo reviews a sofa</h2>
+<p>The first end-to-end test was a 31-second video of Milo, a fictional golden retriever, reviewing a sofa.</p>
+<figure style="max-width: 15rem; margin-left: auto; margin-right: auto;" class="svelte-k7jkgh"><img src="/blog-site/_app/immutable/assets/milo-b2817ea5.jpg" alt="An AI-generated golden retriever looking at the camera." loading="lazy" style="max-height: 30rem; width: auto;" class="svelte-k7jkgh">
+	<figcaption class="svelte-k7jkgh">Milo, the test subject. He is AI-generated.</figcaption>
+</figure>
+<p>From the first message to the finished video, the run took <strong>34 minutes</strong> and cost <strong>about $0.40 in total</strong>:</p>
+<ul><li>RunPod A40 GPU, about 23.5 minutes at $0.59/hr: about $0.24</li>
+<li>Pod disk: under $0.05</li>
+<li>Higgsfield reference image: 0.25 credits</li>
+<li>Higgsfield voiceover, 5 lines at 0.30 each: 1.50 credits</li>
+<li>Higgsfield total: 1.85 credits, roughly $0.10 to $0.16 at my top-up prices</li></ul>
+<p>No hosted video model was used; every clip was generated by LTX on the rented GPU.</p>
+<figure style="max-width: 15rem; margin-left: auto; margin-right: auto;" class="svelte-k7jkgh"><video src="/blog-site/_app/immutable/assets/milo-sofa-review-b501345f.mp4" poster="/blog-site/_app/immutable/assets/milo-sofa-still-06728a31.jpg"   controls playsinline preload="metadata" style="max-height: 30rem; width: auto;" class="svelte-k7jkgh"></video>
+	<figcaption class="svelte-k7jkgh">'Milo Reviews the Sofa', the first video out of the pipeline (31 seconds, with sound).</figcaption>
+</figure>
+<p>The breakdown of those 34 minutes is instructive: about 4 minutes on script, image and voice, about <strong>12 minutes waiting on me</strong>, about 8 minutes on pod boot, failed downloads and a restart, about 14 minutes rendering five clips, and about 2 minutes on review and stitching. You can see the process is working but not perfect.</p></article>
+</div>
+
+
+		<script type="module" data-sveltekit-hydrate="62py1g">
+			import { start } from "/blog-site/_app/immutable/start-9e6de9a9.js";
+
+			start({
+				assets: "/blog-site",
+				env: {},
+				target: document.querySelector('[data-sveltekit-hydrate="62py1g"]').parentNode,
+				version: "1794933791171",
+				hydrate: {
+					node_ids: [0, 5],
+					data: [null,null],
+					form: null,
+					error: null
+				}
+			});
+		</script>
+	</div>
+	</body>
+</html>
