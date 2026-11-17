@@ -1,7 +1,16 @@
 import adapter from 'svelte-adapter-github';
+import { mdsvex } from 'mdsvex';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
+	// Posts are written in Markdown (.md) and compiled to Svelte by mdsvex.
+	extensions: ['.svelte', '.md'],
+	preprocess: [
+		mdsvex({
+			extensions: ['.md'],
+			layout: './src/lib/PostLayout.svelte'
+		})
+	],
 	kit: {
 		adapter: adapter({
 			pages: 'docs',
