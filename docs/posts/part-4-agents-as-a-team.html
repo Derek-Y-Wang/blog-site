@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/blog-site/favicon.png" />
+		<meta name="viewport" content="width=device-width" />
+		<meta http-equiv="content-security-policy" content="">
+		<link href="/blog-site/_app/immutable/assets/Figure-bfb050a1.css" rel="stylesheet">
+		<link href="/blog-site/_app/immutable/assets/Header-f3c0c912.css" rel="stylesheet">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/start-18c4457e.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/index-571d21ce.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/singletons-d1e81c09.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/paths-2cc239d7.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/components/layout.svelte-e024c181.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/modules/pages/_layout.js-9cbb603b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_layout-da46b06b.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/components/pages/posts/part-4-agents-as-a-team/_page.md-25cb54cf.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/Figure-863eb4b7.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/Header-0e7d9e8e.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_page-61c47f7a.js"><title>Building shot-loop, Part 4: Working with agents as a team · Derek Wang</title><!-- HEAD_svelte-hvr9bc_START --><meta name="description" content="An instruction file, a free test suite, several agent sessions with different responsibilities, and the problems that remain unsolved."><!-- HEAD_svelte-hvr9bc_END -->
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">
+
+
+
+
+<div class="page svelte-2wrpi"><header class="svelte-1m0de7o"><h2 class="svelte-1m0de7o"><a href="/blog-site/" class="svelte-1m0de7o">Derek Wang</a></h2>
+  <nav><ul class="svelte-1m0de7o"><li><a href="/blog-site/posts" class="svelte-1m0de7o">Posts</a></li></ul></nav>
+</header>
+	<article class="svelte-2wrpi"><h1 class="svelte-2wrpi">Building shot-loop, Part 4: Working with agents as a team</h1>
+		<p class="date svelte-2wrpi">November 15, 2026</p>
+		<p><em>Part 4 of 4 · Previous: <a href="./part-3-prompting-images">Prompting images</a></em></p>
+<p>The final part of this series is less about video and more about building software with coding agents doing most of the writing. Over approximately four weeks, shot-loop received 17 pull requests.</p>
+<h2>One file, ten skills, 45 tests</h2>
+<p>Everything the agent needs to know is kept in a single instruction file, <code>AGENTS.md</code>, together with ten skills: focused instruction files for specific tasks such as running a pod or writing an image prompt.</p>
+<p>Because the rules are files, they can be tested. A free test suite of <strong>45 tests</strong> requires no network access and never pays for a generation. Among other things, it checks that:</p>
+<ul><li>the shots files are valid,</li>
+<li>the workflow node ids edited by the runner scripts still exist,</li>
+<li>the deployment configurations are well-formed,</li>
+<li>and no media or secrets have been committed.</li></ul>
+<p>The suite has already caught real mistakes. In one case, a workflow node id had changed. Without the test, the runner would have failed silently, and I would have discovered the problem only after paying for a GPU.</p>
+<h2>Approval on every scene</h2>
+<p>Below is an example of the “scene card” the agent presents before rendering a clip. I approve the exact text before anything is sent, and again, with the changes highlighted, before any regeneration:</p>
+<pre class="language-text"><!-- HTML_TAG_START --><code class="language-text">Scene 3 of 5, 6 s, 9:16
+- Character reference: milo, the golden retriever. One reference per shot.
+- Exact video prompt: "A cream-colored golden retriever lying on a beige sofa
+  sniffs a cushion, then looks into the camera with a skeptical expression and
+  slowly shakes his head. Warm living-room light, shallow depth of field,
+  handheld camera. No text, no captions."
+- Voice dialogue: voiceover (not on camera), Milo's voice, verbatim:
+  "Cushion seven out of ten. Too fluffy to trust."
+- Settings: seed 103, 6 s, 1 take, LTX reference workflow on RunPod,
+  reference guidance 3, no music, no first frame.
+- Cost: about 2.5 min of A40 time at $0.59/hr, about $0.02.</code><!-- HTML_TAG_END --></pre>
+<p><em>(This card is an illustrative example written in the repository’s format, not a copy from a real run.)</em></p>
+<h2>Several agents, different responsibilities</h2>
+<p>Eventually a single agent session was no longer sufficient, so the work is now divided among several sessions, each with one responsibility:</p>
+<ul><li>a <strong>coordinator</strong>, which communicates with me and keeps track of the plan,</li>
+<li>a <strong>researcher</strong>, which reads documentation and verifies how tools behave,</li>
+<li>and a single <strong>developer</strong> session, which makes all code changes, so that two agents never edit the same files.</li></ul>
+<p>The sessions coordinate by sending each other messages. The most important rule is that <strong>approval comes only from me.</strong> No agent can approve spending on behalf of another, however the request is phrased.</p>
+<figure style="" class="svelte-k7jkgh"><img src="/blog-site/_app/immutable/assets/who-does-what-9c880d55.svg" alt="Diagram: Me at the top, with approval arrows down to the coordinator, researcher and dev sessions, which pass messages to each other." loading="lazy" style="" class="svelte-k7jkgh">
+	<figcaption class="svelte-k7jkgh">Who does what. Approvals come only from me.</figcaption>
+</figure>
+<h2>The bottleneck is me</h2>
+<p>Approving every stage is what keeps costs low. It is also the reason I cannot publish a video every day: every stage waits for my input, and in the very first run, that waiting accounted for about 12 of the 34 minutes.</p>
+<p>The repository contains a written proposal, not yet adopted, to relax this requirement somewhat:</p>
+<ul><li>plan a series of videos together,</li>
+<li>render all of a series’ clips in a single pod session,</li>
+<li>and use a lighter review process for B-roll that contains no faces and no speech.</li></ul>
+<h2>Open questions and limitations</h2>
+<p>The main limitations, at the time of writing, are:</p>
+<ul><li><strong>Taste and direction.</strong> This is the greatest limitation, and the reason I still review every stage. The agent cannot yet reliably judge the quality of what it generates, nor can it direct a scene well. I believe this can be improved, and it is the next step in making the agent a better creative partner.</li>
+<li><strong>Voice change.</strong> A hosted tool that replaces the speaking voice on a clip was tested at 1 credit per call, but the jobs had not completed at the time of writing, so no results are available yet.</li></ul></article>
+</div>
+
+
+		<script type="module" data-sveltekit-hydrate="1p34116">
+			import { start } from "/blog-site/_app/immutable/start-18c4457e.js";
+
+			start({
+				assets: "/blog-site",
+				env: {},
+				target: document.querySelector('[data-sveltekit-hydrate="1p34116"]').parentNode,
+				version: "1794966480516",
+				hydrate: {
+					node_ids: [0, 7],
+					data: [null,null],
+					form: null,
+					error: null
+				}
+			});
+		</script>
+	</div>
+	</body>
+</html>
