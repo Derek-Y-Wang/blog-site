@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14">
+<rect width="100%" height="100%" rx="8" fill="#ffffff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#c0582b"/></marker>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#999"/></marker></defs>
+<rect x="300" y="14" width="120" height="50" rx="25" fill="#fbe3d6" stroke="#c0582b" stroke-width="1.5"/><text x="360" y="44" text-anchor="middle" font-weight="bold" fill="#7a2e10">Me</text>
+<rect x="60" y="150" width="160" height="70" rx="6" fill="#f2f2f2" stroke="#bbb" stroke-width="1.5"/>
+<text x="140" y="180" text-anchor="middle" font-weight="bold" fill="#303030">Coordinator</text><text x="140" y="202" text-anchor="middle" fill="#707070" font-size="12">talks to me, tracks the plan</text>
+<line x1="360" y1="66" x2="140" y2="146" stroke="#c0582b" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="280" y="150" width="160" height="70" rx="6" fill="#f2f2f2" stroke="#bbb" stroke-width="1.5"/>
+<text x="360" y="180" text-anchor="middle" font-weight="bold" fill="#303030">Researcher</text><text x="360" y="202" text-anchor="middle" fill="#707070" font-size="12">reads docs, tests tools</text>
+<line x1="360" y1="66" x2="360" y2="146" stroke="#c0582b" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="500" y="150" width="160" height="70" rx="6" fill="#f2f2f2" stroke="#bbb" stroke-width="1.5"/>
+<text x="580" y="180" text-anchor="middle" font-weight="bold" fill="#303030">Dev</text><text x="580" y="202" text-anchor="middle" fill="#707070" font-size="12">the only one editing code</text>
+<line x1="360" y1="66" x2="580" y2="146" stroke="#c0582b" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="492" y="100" fill="#7a2e10" font-size="13">approvals only come from me</text>
+<line x1="222" y1="185" x2="278" y2="185" stroke="#999" stroke-width="1.5" stroke-dasharray="4 3" marker-start="url(#b)" marker-end="url(#b)"/>
+<line x1="442" y1="185" x2="498" y2="185" stroke="#999" stroke-width="1.5" stroke-dasharray="4 3" marker-start="url(#b)" marker-end="url(#b)"/>
+<path d="M140,222 C140,270 580,270 580,222" fill="none" stroke="#999" stroke-width="1.5" stroke-dasharray="4 3" marker-start="url(#b)" marker-end="url(#b)"/>
+<text x="360" y="292" text-anchor="middle" fill="#707070" font-size="13">sessions pass messages, but can't approve spending for each other</text></svg>

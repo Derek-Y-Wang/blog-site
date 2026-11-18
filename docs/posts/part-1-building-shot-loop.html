@@ -5,18 +5,19 @@
 		<link rel="icon" href="/blog-site/favicon.png" />
 		<meta name="viewport" content="width=device-width" />
 		<meta http-equiv="content-security-policy" content="">
-		<link href="/blog-site/_app/immutable/assets/_page-bfb050a1.css" rel="stylesheet">
+		<link href="/blog-site/_app/immutable/assets/Figure-bfb050a1.css" rel="stylesheet">
 		<link href="/blog-site/_app/immutable/assets/Header-f3c0c912.css" rel="stylesheet">
-		<link rel="modulepreload" href="/blog-site/_app/immutable/start-317603b8.js">
-		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/index-009b82ab.js">
-		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/singletons-5025e664.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/start-18c4457e.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/index-571d21ce.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/singletons-d1e81c09.js">
 		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/paths-2cc239d7.js">
-		<link rel="modulepreload" href="/blog-site/_app/immutable/components/layout.svelte-f693a3fd.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/components/layout.svelte-e024c181.js">
 		<link rel="modulepreload" href="/blog-site/_app/immutable/modules/pages/_layout.js-9cbb603b.js">
 		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_layout-da46b06b.js">
-		<link rel="modulepreload" href="/blog-site/_app/immutable/components/pages/posts/part-1-building-shot-loop/_page.md-18a2000a.js">
-		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_page-bebae2ab.js">
-		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/Header-b3c46bf2.js"><title>Building shot-loop, Part 1: Letting a coding agent run a video pipeline · Derek Wang</title><!-- HEAD_svelte-hvr9bc_START --><meta name="description" content="Why I built an AI video pipeline that a coding agent runs, how it came together, and what the first video cost."><!-- HEAD_svelte-hvr9bc_END -->
+		<link rel="modulepreload" href="/blog-site/_app/immutable/components/pages/posts/part-1-building-shot-loop/_page.md-06201bb4.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/Figure-863eb4b7.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/Header-0e7d9e8e.js">
+		<link rel="modulepreload" href="/blog-site/_app/immutable/chunks/_page-35cc0f1d.js"><title>Building shot-loop, Part 1: Letting a coding agent run a video pipeline · Derek Wang</title><!-- HEAD_svelte-hvr9bc_START --><meta name="description" content="Why I built an AI video pipeline that a coding agent runs, how it came together, and what the first video cost."><!-- HEAD_svelte-hvr9bc_END -->
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">
@@ -29,7 +30,7 @@
 </header>
 	<article class="svelte-2wrpi"><h1 class="svelte-2wrpi">Building shot-loop, Part 1: Letting a coding agent run a video pipeline</h1>
 		<p class="date svelte-2wrpi">November 1, 2026</p>
-		<p><em>Part 1 of the “Building shot-loop” series. More parts are coming soon.</em></p>
+		<p><em>Part 1 of 4 · Next: <a href="./part-2-designing-the-workflow">Quality, workflows and rules</a></em></p>
 <p>During my time as a software engineer at TikTok, our team was given early internal access to Seedance 2.0 for testing, before its release in China and the US, and a few of us used it to make short videos. Recognizing the growing importance of UGC, I wanted to continue doing the same and I quickly ran into a problem: running these video models through a hosted service such as Higgsfield is expensive. I therefore set out to move the most expensive step, video generation, onto open-source models.</p>
 <p>The result is <strong>shot-loop</strong>, a pipeline for producing short vertical videos (9:16, 720p, 24 fps, up to 45 seconds) for social media, in which a coding agent drives the execution. I describe what I want, the agent plans the video with me, and it then runs the tools.</p>
 <p>This series documents what I learned along the way: what it costs, what failed, what the models will not do, and what it is like to work with several agents at once. All figures come from my own experiment logs and should be read as approximate, reflecting prices at the time.</p>
@@ -55,18 +56,19 @@
 <figure style="max-width: 15rem; margin-left: auto; margin-right: auto;" class="svelte-k7jkgh"><video src="/blog-site/_app/immutable/assets/milo-sofa-review-b501345f.mp4" poster="/blog-site/_app/immutable/assets/milo-sofa-still-06728a31.jpg"   controls playsinline preload="metadata" style="max-height: 30rem; width: auto;" class="svelte-k7jkgh"></video>
 	<figcaption class="svelte-k7jkgh">'Milo Reviews the Sofa', the first video out of the pipeline (31 seconds, with sound).</figcaption>
 </figure>
-<p>The breakdown of those 34 minutes is instructive: about 4 minutes on script, image and voice, about <strong>12 minutes waiting on me</strong>, about 8 minutes on pod boot, failed downloads and a restart, about 14 minutes rendering five clips, and about 2 minutes on review and stitching. You can see the process is working but not perfect.</p></article>
+<p>The breakdown of those 34 minutes is instructive: about 4 minutes on script, image and voice, about <strong>12 minutes waiting on me</strong>, about 8 minutes on pod boot, failed downloads and a restart, about 14 minutes rendering five clips, and about 2 minutes on review and stitching. You can see the process is working but not perfect.</p>
+<p><em>Next up: <a href="./part-2-designing-the-workflow">Part 2, Quality, workflows and rules</a>.</em></p></article>
 </div>
 
 
-		<script type="module" data-sveltekit-hydrate="1onvfgs">
-			import { start } from "/blog-site/_app/immutable/start-317603b8.js";
+		<script type="module" data-sveltekit-hydrate="1mbl4ag">
+			import { start } from "/blog-site/_app/immutable/start-18c4457e.js";
 
 			start({
 				assets: "/blog-site",
 				env: {},
-				target: document.querySelector('[data-sveltekit-hydrate="1onvfgs"]').parentNode,
-				version: "1794964245555",
+				target: document.querySelector('[data-sveltekit-hydrate="1mbl4ag"]').parentNode,
+				version: "1794966480516",
 				hydrate: {
 					node_ids: [0, 4],
 					data: [null,null],
