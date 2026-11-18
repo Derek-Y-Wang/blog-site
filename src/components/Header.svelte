@@ -9,9 +9,6 @@
       <li>
         <a href="{base}/posts">Posts</a>
       </li>
-      <li>
-        <a href="{base}/about">About</a>
-      </li>
     </ul>
   </nav>
 </header>
